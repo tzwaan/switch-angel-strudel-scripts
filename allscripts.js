@@ -159,6 +159,9 @@ register('voc', (key, x) => {
 
   return x.ccn(74).ccv(value).midi('tout');
 });
+// tb303 style filter envelope control between 0 & 1 values for useful range
+register('acidenv', (x, pat) => pat.rlpf(.25).lpenv(x * 9).lps(.2).lpd(.15))
+
 
 /** SOUNDS */
 
@@ -170,6 +173,8 @@ register('acid', (pat) => {
     .lpsustain(0.2).lpd(.2).lpenv(2)
     .lpq(12)
 })
+
+
 
 
 $: s("white").clip(0).gain(0)
