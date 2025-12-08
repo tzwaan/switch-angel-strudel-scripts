@@ -6,8 +6,7 @@ register('acidenv', (x, pat) => pat.lpf(100)
 
 setGainCurve(x => Math.pow(x, 2))
 
-// setGainCurve(x => x**2)
-function blockArrange(patArr, modifiers = []) {
+window.blockArrange = function (patArr, modifiers = []) {
   return stack(
     ...patArr.map(([pat, maskPat]) => {
       pat = [pat].flat()
