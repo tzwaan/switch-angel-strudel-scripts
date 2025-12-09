@@ -6,6 +6,58 @@ register('acidenv', (x, pat) => pat.lpf(100)
 
 setGainCurve(x => Math.pow(x, 2))
 
+
+//tracker style arrangement
+window.track = function(...input) {
+  const patterns = input.shift()
+  let mods = Array.isArray(input.at(-1)) ? input.pop() : undefined
+  if (input.length % 2 !== 0) {
+    throw new Error('Arrange needs a length paramter for each pattern (length, pattern, length, pattern)');
+  }
+  let sects = [];
+  let total = 0;
+  for (let i = 0; i < input.length; i += 2) {
+    let inp = [input.at(i)].flat()
+    let cycles = inp.at(0);
+    let start = inp.at(1) ?? 0
+    
+    total += cycles;
+    
+    let cpat = input.at(i + 1).innerBind((str, pat) => {
+
+      const pats = []
+      str.split(/-+/).forEach((val, index) => {
+        if (val == false ){
+        return
+        }
+        let newPat = patterns.at(index)
+         mods?.forEach(([mod, callback]) => {
+            if (val != mod) {
+              return
+            }
+            newPat = callback(newPat)
+         })
+        
+          pats.push(newPat)
+      })
+      return stack(...pats)
+    });
+   
+    sects.push([cycles, cpat.ribbon(start, cycles).fast(cycles)]);
+  }
+  return stepcat(...sects).slow(total);
+}
+/**
+$: track(
+   [bd,     sd,     hat,    clap,    bass], 
+ 2, "--------0------1-------1--------0",
+ 2, "1-------0------1-------D--------0",
+ 4, "1-------0------1-------1--------1",
+  [['D' ,(x) => x.delay(.5)]] //Optional modifiers
+)
+*/
+
+
 /**
  * Quick Arrange
  * Allows to arrange multiple patterns together over multiple cycles.
@@ -13,12 +65,12 @@ setGainCurve(x => Math.pow(x, 2))
  *
  * @return {Pattern}
  * @example
- * qar(
+ * ar(
  *   4, "<c a f e>(3,8)",
  *   2, "<g a>(5,8)"
  * ).note()
  */
-window.qar = function(...input) {
+window.ar = function(...input) {
 
   if (input.length % 2 !== 0) {
     throw new Error('Arrange needs a length paramter for each pattern (length, pattern, length, pattern)');
@@ -26,14 +78,19 @@ window.qar = function(...input) {
   let sects = [];
   let total = 0;
   for (let i = 0; i < input.length; i += 2) {
-    let cycles = input.at(i);
+    let inp = [input.at(i)].flat()
+    let cycles = inp.at(0);
+    let start = inp.at(1) ?? 0
     total += cycles;
-
+    
     let pattern = input.at(i + 1);
-    sects.push([cycles, pattern.fast(cycles)]);
+    sects.push([cycles, pattern.ribbon(start, cycles).fast(cycles)]);
   }
   return stepcat(...sects).slow(total);
 }
+
+
+window.p = stack
 
 window.blockArrange = function (patArr, modifiers = []) {
   return stack(
