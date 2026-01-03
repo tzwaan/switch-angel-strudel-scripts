@@ -451,9 +451,6 @@ register('sf', (cycles,x) => {
 })
 
 
-
-/* GLOSSING FUNCTIONS! pulled from: https://codeberg.org/glossing/Strudel_Scripts/src/branch/main/scripts.mjs **/
-
 /* Similar to set.mix but won't write over values that `vals` does not contain.
   This lets you do things like
 
@@ -467,7 +464,7 @@ register('sf', (cycles,x) => {
   to do Elektron-style parameter locks ++ set the rhythm of an element (similar to `struct`)
   at the same time
 */
-const up = register(
+register(
   'up',
   (vals, pat) =>
     pat
@@ -489,7 +486,7 @@ will play it, but only at the next 4-divisible cycle (t = 0, 4, 8, etc)
 Useful for locking it into relevant parts of the arrangement
 
 */
-const oneshot = register('oneshot', (grid, pat) => {
+register('oneshot', (grid, pat) => {
   const t = getTime();
   const qt = Math.ceil(t / grid) * grid;
   return pat.filterWhen((t) => t >= qt && t < qt + 1);
@@ -502,7 +499,7 @@ $: s("bd hh sd hh").filtval("s", "bd", x => x.duck(2))
 To only have the kicks trigger the sidechain
 
 */
-const filtval = register('filtval', (key, val, func, pat) => {
+register('filtval', (key, val, func, pat) => {
   return pat.when(
     pat.fmap((v) => v[key] === val),
     func,
@@ -516,7 +513,7 @@ it'll actually slowly drift between those targets rather than starting its glide
 every new note
 
 */
-const glide = register(
+register(
   'glide',
   (time, pat) => {
     let curr = [],
@@ -578,7 +575,7 @@ const glide = register(
 Fun to trigger at the end of bars for weird glitchy fills
 
 */
-const glitch = register('glitch', (amt, pat) => {
+register('glitch', (amt, pat) => {
   return pat.fmap((v) => {
     const keys = Object.keys(v);
     const numKeys = keys.length;
@@ -601,7 +598,7 @@ const glitch = register('glitch', (amt, pat) => {
 
 /* Square ⬜️. Useful for making knobs / sliders feel smoother
 */
-const sq = register('sq', (pat) => pat.fmap((v) => v * v));
+register('sq', (pat) => pat.fmap((v) => v * v));
 
 /* Strums chords
 
@@ -610,7 +607,7 @@ $: s("gm_slap_bass_2")
   .strum(slider(0.0849, 0, 0.1))._pianoroll()
 
 */
-const strum = register('strum', (amt, pat) => {
+register('strum', (amt, pat) => {
   return pat
     .collect()
     .withHaps((haps) => {
@@ -638,7 +635,7 @@ $: s("bd hh sd hh").humanize(slider(0.0328, 0, 1))
 metronome: s("hh*8").n(9).dec(0.3)
 
 */
-const humanize = register('humanize', (amt, pat) => {
+register('humanize', (amt, pat) => {
   const amtC = clamp(amt, 0, 1);
   return pat.withHaps((haps) => {
     return haps.map((hap) => {
@@ -647,3 +644,4 @@ const humanize = register('humanize', (amt, pat) => {
     })
   }).withValue((v) => ({ ...v, velocity: (v.velocity ?? 1) + 0.5 * amtC * (2 * Math.random() - 1) }));
 });
+
