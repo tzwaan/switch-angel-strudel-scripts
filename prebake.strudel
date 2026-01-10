@@ -450,6 +450,23 @@ register('sf', (cycles,x) => {
   return x.scrub(saw.seg(cycles.mul(segments)).slow(cycles))
 })
 
+/* swap one value with another
+@example
+s("bd bd sd bd".fast(4).swap("bd", "<lt bd:3>").swap("sd", "hh sd:2"))
+
+ */
+register('swap', (find, rep, x) => {
+  return x.withValue(v => {
+    if (v === find) {
+      return rep
+    }
+    return v
+  })
+})
+
+// GLOSSING FUNCTIONS <3 these are pulled from Glossing's repo: 
+// https://codeberg.org/glossing/Strudel_Scripts
+
 
 /* Similar to set.mix but won't write over values that `vals` does not contain.
   This lets you do things like
